@@ -39,8 +39,8 @@ public class XmlContext {
 
 	private ContextConfiguration configuration;
 
-	private Hashtable<Class<?>, MetaDataInterceptor> interceptors =
-			new Hashtable<Class<?>, MetaDataInterceptor>();
+	private Hashtable<Class<?>, MetaDataInitializer> initializers =
+			new Hashtable<Class<?>, MetaDataInitializer>();
 	
 	/**
 	 * <p>Creates context instance configured by the <code>options</code>
@@ -86,9 +86,9 @@ public class XmlContext {
 			throw new NullPointerException("Root class: null");
 		}
 		
-		MetaDataInterceptor metaDataInterceptor = getMetaDataInterceptor(clazz);
+		MetaDataInitializer metaDataInitializer = getMetaData(clazz);
 		DeserializationWrapper<T> deserializer = new DeserializationWrapper<T>(
-				metaDataInterceptor, this.configuration);
+				metaDataInitializer, this.configuration);
 		return deserializer;
 	}
 
@@ -104,16 +104,16 @@ public class XmlContext {
 	 * 
 	 * @see Thread#start()
 	 */
-	private MetaDataInterceptor getMetaDataInterceptor(Class<?> clazz) {
-		MetaDataInterceptor interceptor = this.interceptors.get(clazz);
+	private MetaDataInitializer getMetaData(Class<?> clazz) {
+		MetaDataInitializer initializer = this.initializers.get(clazz);
 		
-		if(interceptor == null) {
-			interceptor = new MetaDataInterceptor(clazz, this.configuration);
-			this.interceptors.put(clazz, interceptor);
-			interceptor.start();
+		if(initializer == null) {
+			initializer = new MetaDataInitializer(clazz, this.configuration);
+			this.initializers.put(clazz, initializer);
+			initializer.start();
 		}
 		
-		return interceptor;
+		return initializer;
 	}
 	
 	//Serializer/Deserializer implementation
@@ -147,8 +147,8 @@ public class XmlContext {
 			}
 			
 			try {
-				MetaDataInterceptor interceptor = getMetaDataInterceptor(obj.getClass());
-				XmlSerializer serializer = new XmlSerializer(interceptor, getAdapterRegistry());
+				MetaDataInitializer initializer = getMetaData(obj.getClass());
+				XmlSerializer serializer = new XmlSerializer(initializer, getAdapterRegistry());
 				String encoding = this.contextConfig.getEncoding();
 				boolean standalone = this.contextConfig.isStandalone();
 				serializer.serialize(obj, os, encoding, standalone);
@@ -174,10 +174,10 @@ public class XmlContext {
 
 		private XmlParser<T> parser;
 		
-		private DeserializationWrapper(MetaDataInterceptor metaDataInterceptor, 
+		private DeserializationWrapper(MetaDataInitializer metaDataInitializer, 
 				ContextConfiguration config) {
 			
-			this.parser = new XmlParser<T>(metaDataInterceptor, config.getAdapterRegistry());
+			this.parser = new XmlParser<T>(metaDataInitializer, config.getAdapterRegistry());
 			parser.setPrimitiveTypeInitializer(config.getPrimitiveTypeInitializer());
 		}
 		

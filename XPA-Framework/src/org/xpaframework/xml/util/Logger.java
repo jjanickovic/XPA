@@ -8,7 +8,7 @@ import android.util.Log;
  */
 public class Logger {
 
-	private static Config config = new Config();
+	private static Configuration configuration = new Configuration();
 	
 	/**
 	 * Enumeration containing logging levels. The enumerated values correspond
@@ -23,7 +23,11 @@ public class Logger {
 	 * 
 	 * @author Jan Janickovic
 	 * 
-	 * @see Log
+	 * @see Log#VERBOSE
+	 * @see Log#DEBUG
+	 * @see Log#INFO
+	 * @see Log#WARN
+	 * @see Log#ERROR
 	 */
 	public enum Level {
 		VERBOSE(2),
@@ -46,8 +50,8 @@ public class Logger {
 		}
 	}
 	
-	public static Config getConfig() {
-		return config;
+	public static Configuration getConfig() {
+		return configuration;
 	}
 
 	private Class<?> logClass;
@@ -62,7 +66,7 @@ public class Logger {
 	
 	/**
 	 * <p>Method prints verbose message by {@link Log
-	 * #d(String, String)} by setting the simple name of the target class</p>. 
+	 * #v(String, String)} by setting the simple name of the target class</p>. 
 	 * 
 	 * @param msg - message string to be printed.
 	 * 
@@ -86,7 +90,7 @@ public class Logger {
 	
 	/**
 	 * <p>Method prints info message by {@link Log
-	 * #d(String, String)} by setting the simple name of the target class</p>. 
+	 * #w(String, String)} by setting the simple name of the target class</p>. 
 	 * 
 	 * @param msg - message string to be printed.
 	 * 
@@ -98,7 +102,7 @@ public class Logger {
 	
 	/**
 	 * <p>Method prints warning message by {@link Log
-	 * #d(String, String)} by setting the simple name of the target class</p>. 
+	 * #w(String, String)} by setting the simple name of the target class</p>. 
 	 * 
 	 * @param msg - message string to be printed.
 	 * 
@@ -110,7 +114,7 @@ public class Logger {
 	
 	/**
 	 * <p>Method prints error message by {@link Log
-	 * #d(String, String)} by setting the simple name of the target class</p>. 
+	 * #e(String, String)} by setting the simple name of the target class</p>. 
 	 * 
 	 * @param msg - message string to be printed.
 	 * 
@@ -122,8 +126,8 @@ public class Logger {
 	
 	/**
 	 * <p>Method prints error message by {@link Log
-	 * #d(String, String)} and the {@link Throwable}'s stack trace by setting
-	 * the simple name of the target class</p>.
+	 * #e(String, String, Throwable)} and the {@link Throwable}'s stack trace by setting
+	 * the simple name of the target class.</p>
 	 * <p>Note, that this level of logging is printed always, even if the
 	 * logging level is set to smaller value or is completely disabled.</p>
 	 * 
@@ -137,12 +141,17 @@ public class Logger {
 	}
 	
 	protected void print(Level level, String msg) {
-		if(config.isLoggingEnabled() && config.getLevel().getLevel() <= level.getLevel()) {
+		if(configuration.isLoggingEnabled() && configuration.getLevel().getLevel() <= level.getLevel()) {
 			Log.println(level.level, this.logClass.getSimpleName(), msg);
 		}
 	}
 	
-	public static class Config {
+	/**
+	 * <p>Logger configuration class.</p>
+	 * 
+	 * @author Jan Janickovic
+	 */
+	public static class Configuration {
 		
 		private boolean loggingEnabled;
 		private Level level = Level.WARNING;

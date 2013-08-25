@@ -34,9 +34,9 @@ import org.xpaframework.xml.util.Logger;
  * @see AttributeInfo
  * @see NamespaceInfo
  */
-public final class MetaDataInterceptor extends Thread {
+public final class MetaDataInitializer extends Thread {
 
-	private Logger logger = Logger.getLogger(MetaDataInterceptor.class); 
+	private Logger logger = Logger.getLogger(MetaDataInitializer.class); 
 	
 	private PrimitiveTypeInitializer primitiveTypeInitializer;
 	private ValueAdapterRegistry valueAdapterRegistry;
@@ -51,6 +51,36 @@ public final class MetaDataInterceptor extends Thread {
 	 */
 	private Map<Field, Method> getterMap;
 	private Map<Field, Method> setterMap;
+	
+	protected MetaDataInitializer(Class<?> root, ContextConfiguration config) {
+		this.rootClass = root;
+		
+		this.parsingInfo = new Hashtable<String, ElementInfo>();
+		this.serializationInfo = new Hashtable<String, ElementInfo>();
+		
+		this.getterMap = new Hashtable<Field, Method>();
+		this.setterMap = new Hashtable<Field, Method>();
+		
+		this.primitiveTypeInitializer = config.getPrimitiveTypeInitializer();
+		this.valueAdapterRegistry = config.getAdapterRegistry();
+	}
+	
+	/**
+	 * <p>Starts the metadata creation for the specified class.</p>
+	 * 
+	 * @throws IllegalStateException if the root class is not validated.
+	 */
+	@Override
+	public void run() throws IllegalStateException {
+		XmlUtils.validateRoot(this.rootClass);
+
+		try {
+			NamespaceInfo namespace = getNamespace(this.rootClass);
+			createMetaData(this.rootClass, null, namespace);
+		} catch (MetaDataCreationException e) {
+			throw new IllegalStateException("Meta data creation failed!", e);
+		}
+	}
 	
 	/**
 	 * <p>Returns created meta-data for specified class. The metadata are used
@@ -110,17 +140,67 @@ public final class MetaDataInterceptor extends Thread {
 		return this.setterMap.get(field);
 	}
 
-	protected MetaDataInterceptor(Class<?> root, ContextConfiguration config) {
-		this.rootClass = root;
+	/**
+	 * <p>Creates id string for the object mapping. This key contains case-sensitive
+	 * element name and the element's namespace.</p>
+	 * 
+	 * @param elementName - name of the XML element.
+	 * @param targetNamespace - XML element's namespace.
+	 * 
+	 * @return The key used for getting appropriate element information.
+	 * 
+	 * @see #getParsingInfo()
+	 */
+	protected String createIdentifier(String elementName, String targetNamespace) {
+		return targetNamespace + ElementInfo.KEY_DELIMITER + elementName;
+	}
+	
+	/**
+	 * <p>Creates key used to retireve element infomation required for object serialization.</p>
+	 * 
+	 * @param type - {@link Class} representing target object. This <code>type</code> is usually
+	 * retrieved by {@link Object#getClass()} method.
+	 * 
+	 * @param field - the target object's owner field. The only exception is the root element
+	 * that has no field to own it.
+	 * 
+	 * @return String for getting appropriate {@link ElementInfo} object.
+	 * 
+	 * @see #getSerializationInfo()
+	 */
+	protected String createIdentifier(Class<?> type, Field field) {
+		type = this.primitiveTypeInitializer.convertType(type);
+		String identifier = type.getCanonicalName();
 		
-		this.parsingInfo = new Hashtable<String, ElementInfo>();
-		this.serializationInfo = new Hashtable<String, ElementInfo>();
+		if(field != null) {
+			identifier += ElementInfo.KEY_DELIMITER +
+					field.getDeclaringClass().getCanonicalName() + "." +
+					field.getName();
+		}
 		
-		this.getterMap = new Hashtable<Field, Method>();
-		this.setterMap = new Hashtable<Field, Method>();
+		return identifier;
+	}
+	
+	/**
+	 * <p>Returns the target namespace for this {@link AnnotatedElement}
+	 * <code>element</code>.</p>
+	 * 
+	 * @param element - the {@link AnnotatedElement} representing XML element.
+	 * @return the target namespace for mapping or <code>null</code> if
+	 * no namespace is defined.
+	 * @throws NullPointerException if <code>clazz</code> is <code>null</code>.
+	 * 
+	 * @see XmlSchema
+	 */
+	protected NamespaceInfo getNamespace(AnnotatedElement element) throws NullPointerException {
+		if(element == null) {
+			throw new NullPointerException("clazz = null!");
+		} else if(!element.isAnnotationPresent(XmlNamespace.class)) {
+			return null;
+		}
 		
-		this.primitiveTypeInitializer = config.getPrimitiveTypeInitializer();
-		this.valueAdapterRegistry = config.getAdapterRegistry();
+		XmlNamespace xmlNamespace = element.getAnnotation(XmlNamespace.class);
+		return new NamespaceInfo(xmlNamespace.prefix(), xmlNamespace.value());
 	}
 	
 	private void createMetaData(Class<?> clazz, Field owner, NamespaceInfo namespace)
@@ -390,84 +470,4 @@ public final class MetaDataInterceptor extends Thread {
 		this.valueAdapterRegistry.registerAdapter(adapter);
 	}
 
-	/**
-	 * <p>Creates id string for the object mapping. This key contains case-sensitive
-	 * element name and the element's namespace.</p>
-	 * 
-	 * @param elementName - name of the XML element.
-	 * @param targetNamespace - XML element's namespace.
-	 * 
-	 * @return The key used for getting appropriate element information.
-	 * 
-	 * @see #getParsingInfo()
-	 */
-	protected String createIdentifier(String elementName, String targetNamespace) {
-		return targetNamespace + ElementInfo.KEY_DELIMITER + elementName;
-	}
-	
-	/**
-	 * <p>Creates key used to retireve element infomation required for object serialization.</p>
-	 * 
-	 * @param type - {@link Class} representing target object. This <code>type</code> is usually
-	 * retrieved by {@link Object#getClass()} method.
-	 * 
-	 * @param field - the target object's owner field. The only exception is the root element
-	 * that has no field to own it.
-	 * 
-	 * @return String for getting appropriate {@link ElementInfo} object.
-	 * 
-	 * @see #getSerializationInfo()
-	 */
-	protected String createIdentifier(Class<?> type, Field field) {
-		type = this.primitiveTypeInitializer.convertType(type);
-		String identifier = type.getCanonicalName();
-		
-		if(field != null) {
-			identifier += ElementInfo.KEY_DELIMITER +
-					field.getDeclaringClass().getCanonicalName() + "." +
-					field.getName();
-		}
-		
-		return identifier;
-	}
-	
-	/**
-	 * <p>Returns the target namespace for this {@link AnnotatedElement}
-	 * <code>element</code>.</p>
-	 * 
-	 * @param element - the {@link AnnotatedElement} representing XML element.
-	 * @return the target namespace for mapping or <code>null</code> if
-	 * no namespace is defined.
-	 * @throws NullPointerException if <code>clazz</code> is <code>null</code>.
-	 * 
-	 * @see XmlSchema
-	 */
-	protected NamespaceInfo getNamespace(AnnotatedElement element) throws NullPointerException {
-		if(element == null) {
-			throw new NullPointerException("clazz = null!");
-		} else if(!element.isAnnotationPresent(XmlNamespace.class)) {
-			return null;
-		}
-		
-		XmlNamespace xmlNamespace = element.getAnnotation(XmlNamespace.class);
-		return new NamespaceInfo(xmlNamespace.prefix(), xmlNamespace.value());
-	}
-	
-	/**
-	 * <p>Starts the metadata creation for the specified class.</p>
-	 * 
-	 * @throws IllegalStateException if the root class is not validated.
-	 */
-	@Override
-	public void run() throws IllegalStateException {
-		XmlUtils.validateRoot(this.rootClass);
-
-		try {
-			NamespaceInfo namespace = getNamespace(this.rootClass);
-			createMetaData(this.rootClass, null, namespace);
-		} catch (MetaDataCreationException e) {
-			throw new IllegalStateException("Meta data creation failed!", e);
-		}
-	}
-	
 }

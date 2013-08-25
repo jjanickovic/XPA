@@ -35,7 +35,7 @@ public class XmlParser<T extends Object> extends DefaultHandler {
 
 	private final Logger logger = Logger.getLogger(getClass());
 	
-	private MetaDataInterceptor metaDataInterceptor;
+	private MetaDataInitializer metaDataInitializer;
 	private Map<String, ElementInfo> metaData;
 	
 	private PrimitiveTypeInitializer primitiveTypeInitializer;
@@ -48,8 +48,8 @@ public class XmlParser<T extends Object> extends DefaultHandler {
 		this.primitiveTypeInitializer = initializer;
 	}
 
-	public XmlParser(MetaDataInterceptor metaDataInterceptor, ValueAdapterRegistry adapterRegistry) {
-		this.metaDataInterceptor = metaDataInterceptor;
+	public XmlParser(MetaDataInitializer metaDataInitializer, ValueAdapterRegistry adapterRegistry) {
+		this.metaDataInitializer = metaDataInitializer;
 		this.adapterRegistry = adapterRegistry;
 	}
 	
@@ -63,7 +63,7 @@ public class XmlParser<T extends Object> extends DefaultHandler {
 		this.logger.v("startDocument()");
 		
 		try {
-			this.metaData = metaDataInterceptor.getParsingInfo();
+			this.metaData = metaDataInitializer.getParsingInfo();
 		} catch (InterruptedException e) {
 			throw new RuntimeException("Metadata processing failure!", e);
 		}
@@ -123,7 +123,7 @@ public class XmlParser<T extends Object> extends DefaultHandler {
 					objectInfo.setObject(value);
 				} else {//default implementation of XmlValue annotation
 					Field valueField = elementInfo.getValueField();
-					Method setter = this.metaDataInterceptor.getSetterMethod(valueField);
+					Method setter = this.metaDataInitializer.getSetterMethod(valueField);
 					ValueAdapter<?> adapter = this.adapterRegistry.getAdapter(valueField.getType());
 					XmlUtils.invoke(setter, objectInfo.getObject(),
 							adapter.convertValue(objectInfo.getElementValue()));
@@ -144,11 +144,11 @@ public class XmlParser<T extends Object> extends DefaultHandler {
 		Field owner = getInjectionField(elementInfo, parentClass);
 
 		if(List.class.isAssignableFrom(owner.getType())) {
-			Method getter = this.metaDataInterceptor.getGetterMethod(owner);
+			Method getter = this.metaDataInitializer.getGetterMethod(owner);
 			List<Object> list = XmlUtils.invokeList(parentObjectInfo.getObject(), getter);
 			list.add(objectInfo.getObject());
 		} else {
-			Method setter = this.metaDataInterceptor.getSetterMethod(owner);
+			Method setter = this.metaDataInitializer.getSetterMethod(owner);
 			XmlUtils.invoke(setter, parentObjectInfo.getObject(), objectInfo.getObject());
 		}
 	}
@@ -174,12 +174,12 @@ public class XmlParser<T extends Object> extends DefaultHandler {
 	}
 
 	private String getElementKey(String localName, String namespace, Attributes attributes) {
-		String elementKey = this.metaDataInterceptor.createIdentifier(localName, namespace);
+		String elementKey = this.metaDataInitializer.createIdentifier(localName, namespace);
 		String type = attributes.getValue(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "type");
 		
 		if(type != null && type.contains(":")) {
 			type = type.substring(type.indexOf(":") + 1);
-			elementKey = this.metaDataInterceptor.createIdentifier(type, namespace);
+			elementKey = this.metaDataInitializer.createIdentifier(type, namespace);
 		}
 		
 		return elementKey;
@@ -230,7 +230,7 @@ public class XmlParser<T extends Object> extends DefaultHandler {
 				
 				ValueAdapter<?> adapter = this.adapterRegistry.getAdapter(valueType);
 				Object valueObject = adapter.convertValue(attributeValue);
-				Method setter = this.metaDataInterceptor.getSetterMethod(attributeField);
+				Method setter = this.metaDataInitializer.getSetterMethod(attributeField);
 				
 				XmlUtils.invoke(setter, element, valueObject);
 			} catch (ValueConversionException e) {
