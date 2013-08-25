@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<values>
+	<primitives>
+		<byte>0x62</byte>
+		<double>123456.789</double>
+		<int>123</int>
+		<float>123456.78</float>
+		<long>92846528347</long>
+		<short>12</short>
+		<char>c</char>
+		<boolean>false</boolean>
+	</primitives>
+	<objects>
+		<q-name>{http://www.namespace.sk}ns</q-name>
+		<big-integer>145619465982</big-integer>
+		<long>9876543210</long>
+		<calendar>2013-01-01Z</calendar>
+		<big-decimal>12.00</big-decimal>
+		<url>http://www.android.com</url>
+		<char>C</char>
+		<boolean>true</boolean>
+		<short>-100</short>
+		<byte>0x42</byte>
+		<float>123456.78</float>
+		<double>123456.789</double>
+		<duration>PT15M16.594S</duration>
+		<int>123</int>
+		<string>string value, etc.</string>
+	</objects>
+</values>

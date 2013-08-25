@@ -1,0 +1,31 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.xpa.example"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="15"/>
+    
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    
+    <application android:label="@string/app_name" android:name="org.xpa.example.ApplicationContext" android:allowBackup="true">
+        <activity android:name="org.xpa.example.activity.MainActivityty" android:configChanges="orientation"
+            android:icon="@drawable/app_icon">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="org.xpa.example.activity.XPAActivityty" android:configChanges="orientation"/>
+        <activity android:name="org.xpa.example.activity.JsonActivityty" android:configChanges="orientation"/>
+        <activity android:name="org.xpa.example.activity.XmlDeserializationActivityty" android:configChanges="orientation"/>
+        <activity android:name="org.xpa.example.activity.XmlSerializationActivityty" android:configChanges="orientation"/>
+        
+        <activity android:name="org.xpa.example.activity.PerformanceResultActivityty" android:configChanges="orientation"
+            android:theme="@android:style/Theme.Dialog"/>
+        
+        <activity android:name="org.xpa.example.activity.SettingsActivityty" android:configChanges="orientation"/>
+    </application>
+
+</manifest>

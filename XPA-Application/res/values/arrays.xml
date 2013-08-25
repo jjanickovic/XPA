@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinner_document_type">
+        <item>@string/item_document_small</item>
+        <item>@string/item_document_large</item>
+    </string-array>
+    <string-array name="spinner_input_type">
+        <item>@string/item_input_file</item>
+        <item>@string/item_input_http</item>
+    </string-array>
+    <string-array name="spinner_input_data">
+        <item>@string/item_data_orders</item>
+        <item>@string/item_data_values</item>
+        <item>@string/item_data_shop</item>
+    </string-array>
+    <string-array name="spinner_repeat_count">
+        <item>@string/repeat_1</item>
+        <item>@string/repeat_10</item>
+        <item>@string/repeat_20</item>
+        <item>@string/repeat_50</item>
+        <item>@string/repeat_100</item>
+    </string-array>
+</resources>

@@ -1,0 +1,74 @@
+<resources>
+    <string name="app_name">XML Processing Examples</string>
+    
+    <string name="xml_serialize_xpa">XPA Serialization</string>
+    <string name="xml_serialize_dom">DOM Serialization</string>
+    <string name="xml_serialize_xml_pull">XmlPull Serialization</string>
+    
+    <string name="label_xml_deserialize">XML Deserialization Examples</string>
+    <string name="label_xml_serialize">XML Serialization Examples</string>
+    <string name="label_json">JSON Examples</string>
+    <string name="label_xpa">Android Object Binding</string>
+    
+    <string name="xml_deserialize_xpa">XPA Deserialization</string>
+    <string name="xml_deserialize_dom">DOM Deserialization</string>
+    <string name="xml_deserialize_sax">SAX Deserialization</string>
+    <string name="xml_deserialize_xml_pull">XmlPull Deserialization</string>
+    
+    <string name="xml_sserialize_xpa">XPA Serialization</string>
+    <string name="xml_sserialize_dom">DOM Serialization</string>
+    <string name="xml_sserialize_xml_pull">XmlPull Serialization</string>
+    
+    <string name="json_serialize">JSON Serialization</string>
+    <string name="json_deserialize">JSON Deserialization</string>
+
+    <string name="label_document_type">Select document type</string>
+    <string name="item_document_small">Small XML (2 Elements)</string>
+    <string name="item_document_large">Large XML (254 ELements)</string>
+    
+    <string name="label_input_type">Select input type</string>
+    <string name="item_input_file">File</string>
+    <string name="item_input_http">Http</string>
+    
+    <string name="label_input_data">Select input Data</string>
+    <string name="item_data_orders">Orders</string>
+    <string name="item_data_values">Values</string>
+    <string name="item_data_shop">Shop</string>
+    
+    <string name="label_repeat_count">Select repeat count</string>
+    <string name="repeat_1">1</string>
+    <string name="repeat_10">10</string>
+    <string name="repeat_20">20</string>
+    <string name="repeat_50">50</string>
+    <string name="repeat_100">100</string>
+    
+    <string name="msg_starting">Starting process, please wait for the result.</string>
+    <string name="msg_runs">Run count: %1$s</string>
+    <string name="msg_min">MIN: %1$s</string>
+    <string name="msg_max">MAX: %1$s</string>
+    <string name="msg_avg">AVG: %1$s</string>
+    
+    <string name="msg_toast_result_ok">Process finished with status: OK</string>
+    <string name="msg_toast_result_failed">Process finished with status: Failed</string>
+    <string name="msg_toast_no_data">
+        Data has not been initialized yet! Run deserialization first!
+    </string>
+    <string name="msg_toast_invalid_address">
+        Invalid server address! Check server address settings.
+    </string>
+    
+    <!-- menu items -->
+    
+    <string name="label_menu_settings">Settings</string>
+    <string name="label_menu_about">About</string>
+    
+    <!-- preference items -->
+    
+    <string name="label_settins_title">Server connection settins</string>
+    <string name="label_settins_summary">Define server address/domain to get access to test http comunication.</string>
+    <string name="label_settins_dialog_message">
+        Specify the address of the server for getting and posting application data through Internet.
+        The input format is: http[s]://&lt;address&gt;[:&lt;port&gt;]. Examples: https://www.example.com,
+        http://192.168.1.1:8080, etc.
+    </string>
+</resources>

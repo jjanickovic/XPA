@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shop>
+    <category name = "computers">
+        <category name = "notebooks">
+            <product>
+                <name>Asus</name>
+                <price>123.25</price>
+            </product>
+            <product>
+                <name>Acer</name>
+                <price>645.90</price>
+            </product>
+            <product>
+                <name>Samsung</name>
+                <price>1099</price>
+            </product>
+        </category>
+        <category name="desktops">
+            <product>
+                <name>Dell Alienware</name>
+                <price>3249</price>
+            </product>
+            <product>
+                <name>Apple</name>
+                <price>2799.99</price>
+            </product>
+        </category>
+    </category>
+    <category name="foto">
+        <product>
+            <name>Canon EOS 450D</name>
+            <price>650</price>
+        </product>
+    </category>
+</shop>

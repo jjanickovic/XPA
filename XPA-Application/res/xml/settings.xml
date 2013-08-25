@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    
+	<EditTextPreference
+	    android:key="server_address"
+	    android:dialogTitle="@string/label_settins_title"
+	    android:dialogMessage="@string/label_settins_dialog_message"
+	    android:title="@string/label_settins_title"
+	    android:summary="@string/label_settins_summary"
+	/>
+	    
+</PreferenceScreen>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<people count="2">
+	<person gender="F">
+		<name>Alice</name>
+		<surname>White</surname>
+	</person>
+	<person gender="M">
+		<name>John</name>
+		<surname>Doe</surname>
+	</person>
+</people>
