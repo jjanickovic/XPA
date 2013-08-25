@@ -13,18 +13,33 @@ package org.xpaframework.xml;
 public final class XmlContextFactory {
 
 	/**
-	 * Creates fresh new {@link XmlContext} object using default {@link SimpleTypeRegistry}.
+	 * <p>Singleton factory instance.</p>
+	 */
+	private static XmlContextFactory instance = new XmlContextFactory();
+	
+	/**
+	 * @return singleton instance of this {@link XmlContextFactory} class.
+	 */
+	public static XmlContextFactory getInstance() {
+		return instance;
+	}
+
+	/**
+	 * <p>Creates fresh new {@link XmlContext} object using default
+	 * {@link ContextConfiguration}.</p>
 	 * 
 	 * @return new {@link XmlContext} object.
 	 * 
-	 * @see XmlContextFactory#createXmlContext(SimpleTypeRegistry)
+	 * @see XmlContextFactory#createXmlContext(ContextConfiguration)
+	 * @see #defaultConfiguration()
 	 */
 	public synchronized XmlContext createXmlContext() {
 		return createXmlContext(defaultConfiguration());
 	}
 	
 	/**
-	 * Creates fresh new {@link XmlContext} object using custom {@link SimpleTypeRegistry}.
+	 * <p>Creates fresh new {@link XmlContext} object using custom
+	 * {@link SimpleTypeRegistry}.</p>
 	 * 
 	 * @param valueAdapterResolver
 	 * 
@@ -36,19 +51,13 @@ public final class XmlContextFactory {
 		return new XmlContext(configuration);
 	}
 	
+	/**
+	 * @return default configuration object used for context creation.
+	 */
 	public ContextConfiguration defaultConfiguration() {
 		return new ContextConfiguration();
 	}
 	
-	private static XmlContextFactory instance = new XmlContextFactory();
-
-	/**
-	 * @return singleton instance of this {@link XmlContextFactory} class.
-	 */
-	public static XmlContextFactory getInstance() {
-		return instance;
-	}
-
 	private XmlContextFactory() {
 	}
 

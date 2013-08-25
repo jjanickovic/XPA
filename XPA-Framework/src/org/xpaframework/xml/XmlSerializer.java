@@ -30,20 +30,20 @@ public class XmlSerializer {
 
 	private org.xmlpull.v1.XmlSerializer serializer;
 	
-	private MetaDataInterceptor metaDataInterceptor;
+	private MetaDataInitializer metaDataInitializer;
 	private ValueAdapterRegistry adapterRegistry;
 	
 	private Map<String, ElementInfo> serializationInfo;
 	
-	public XmlSerializer(MetaDataInterceptor metaDataInterceptor, ValueAdapterRegistry adapterRegistry)
+	public XmlSerializer(MetaDataInitializer metaDataInitializer, ValueAdapterRegistry adapterRegistry)
 			throws IOException {
 		
-		this.metaDataInterceptor = metaDataInterceptor;
+		this.metaDataInitializer = metaDataInitializer;
 		this.adapterRegistry = adapterRegistry;
 		this.serializer = Xml.newSerializer();
 		
 		try {
-			this.serializationInfo = this.metaDataInterceptor.getSerializationInfo();
+			this.serializationInfo = this.metaDataInitializer.getSerializationInfo();
 			this.logger.v( "meta-data:\r\n " + this.serializationInfo);
 		} catch (InterruptedException e) {
 			throw new RuntimeException("Metadata processing failure!", e);
@@ -217,7 +217,7 @@ public class XmlSerializer {
 
 		for(AttributeInfo attributeInfo : elementInfo.getAttributeInformations()) {
 			Field field = attributeInfo.getField();
-			Method getter = this.metaDataInterceptor.getGetterMethod(field);
+			Method getter = this.metaDataInitializer.getGetterMethod(field);
 			Object value = XmlUtils.invoke(getter, obj);
 			
 			if(value == null) {//skipping null values
@@ -244,7 +244,7 @@ public class XmlSerializer {
 			throws IOException {
 		
 		for(Field field : fields) {
-			Method getter = this.metaDataInterceptor.getGetterMethod(field);
+			Method getter = this.metaDataInitializer.getGetterMethod(field);
 			Object value = XmlUtils.invoke(getter, obj);
 			
 			if(value == null) {//skipping null values
@@ -258,7 +258,7 @@ public class XmlSerializer {
 				serializeElements((Collection<?>) value, field, elementName);
 			} else {
 				ElementInfo elementInfo = getElementInfo(valueClass, field);
-				NamespaceInfo targetNamespace = this.metaDataInterceptor.getNamespace(field);
+				NamespaceInfo targetNamespace = this.metaDataInitializer.getNamespace(field);
 				
 				if(targetNamespace != null) {
 					namespace = targetNamespace;
@@ -312,7 +312,7 @@ public class XmlSerializer {
 	void serializeValue(Object obj, Field field)
 			throws IllegalArgumentException, IllegalStateException, IOException {
 
-		Method getter = this.metaDataInterceptor.getGetterMethod(field);
+		Method getter = this.metaDataInitializer.getGetterMethod(field);
 		Object value = XmlUtils.invoke(getter, obj);
 		
 		if(value != null) {
@@ -333,7 +333,7 @@ public class XmlSerializer {
 			return getElementInfo(field.getType(), field);
 		}
 		
-		String key = this.metaDataInterceptor.createIdentifier(clazz, field);
+		String key = this.metaDataInitializer.createIdentifier(clazz, field);
 		ElementInfo elementInfo = this.serializationInfo.get(key);
 		
 		if(elementInfo == null) {
